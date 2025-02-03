@@ -147,6 +147,21 @@ def get_history():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/history/<id>', methods=['GET'])
+def get_prediction_by_id(id):
+    try:
+        prediction_ref = db.collection("predictions").document(id)
+        doc = prediction_ref.get()
+        if doc.exists:
+            prediction = doc.to_dict()
+            prediction["id"] = doc.id
+            return jsonify(prediction), 200
+        else:
+            return jsonify({"error": f"No se encontró una predicción con ID: {id}"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
